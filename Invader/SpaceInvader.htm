@@ -1,0 +1,485 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="stylesheet.css">
+    <script type="text/javascript">
+    "use strict";
+var ctx, ship, ufo, shots = [], aliens = [], bombs = [],
+    block, blocks=[], walls=[], 
+    block2, block2s=[], wall2s=[],
+    score = 0, stage = 1, clock = 0, mainT = NaN, alienT = NaN,
+    shotInterval = 0, startFlag = false;
+
+// Start Waiting
+const WaitForClick = () => new Promise(resolve => document.addEventListener("click", resolve));
+
+async function WaitSample() {
+  console.log("クリック待ち開始。");
+  await WaitForClick();
+  console.log("この行は、クリックされた後に実行されます。");
+    if (startFlag==false) {
+        start();
+    }
+}
+
+WaitSample();
+
+// Function's
+function Shot() {
+    this.x = 0;
+    this.y = -100;
+    this.count = this.maxCount;
+    this.maxCount = 55;
+    this.offset = 216;
+    this.even = false;
+    this.isEven = function () { return true; }
+}
+function Bomb() {
+    this.x = 0;
+    this.y = 600;
+    this.offset = 48;
+    this.even = false;
+    this.time = rand(200) + 50;
+    this.isEven = function () { return this.even; }
+}
+
+function Alien(x, y, point, offset) {
+    this.x = x;
+    this.y = y;
+    this.point = point;
+    this.offset = offset;
+    this.isEven = function () { return Alien.isEven; }
+}
+
+function Ship() {
+    this.x = 0;
+    this.y = 550;
+    this.offset = 192;
+    this.moveL = false;
+    this.moveR = false;
+    this.isEven = function () { return true; }
+}
+
+function Ufo() {
+    this.x = 600;
+    this.y = 30;
+    this.offset = 240;
+    this.point = 300;
+    this.isEven = function () { return true; }
+}
+
+function Block(_x, _y) {
+    this.x = _x;
+    this.y = _y;
+}
+
+function Block2(_x, _y) {
+    this.x = _x;
+    this.y = _y;
+}
+
+function Wall() {
+    this.x = 0;
+    this.y = 0;
+    this.exist = true; 
+    this.offset = 264;
+    this.isEven = function () { return true; }
+}
+
+function Wall2() {
+    this.x = 0;
+    this.y = 0;
+    this.exist = true; 
+    this.offset = 288;
+    this.isEven = function () { return true; }
+}
+
+var bitmap = {
+    draw: function (ctx) {
+        if (!this.strip) {
+            this.strip = document.getElementById('strip');
+        }
+        ctx.drawImage(this.strip,
+            this.offset + (this.isEven() ? 0 : 24), 0, 24, 24,
+            this.x, this.y, 24, 24);
+    }
+}
+
+Ship.prototype = Alien.prototype = Bomb.prototype =
+Shot.prototype = Ufo.prototype = Wall.prototype = Wall2.prototype = bitmap;
+
+Alien.isEven = false;
+Alien.isDown = false;
+Alien.isLeft = false;
+Alien.interval = 1000;
+
+function rand(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function playSound(soundName) {
+    document.getElementById(soundName).play();
+}
+
+// Game initialize
+function init() {
+      ctx = document.getElementById('canvas').getContext('2d');
+    ctx.font = "20pt Arial";
+    score = 0, stage = 1;
+
+    for (var i = 0; i < 10; i++) {
+        shots.push(new Shot());
+    }
+
+    // トーチカ設定
+    for (var i=0; i<5; i++) {
+        blocks[i*11+0] = new Block(i*115+30,452);
+        blocks[i*11+1] = new Block(i*115+54,452);
+        blocks[i*11+2] = new Block(i*115+78,452);
+        blocks[i*11+3] = new Block(i*115+30,476);
+        blocks[i*11+4] = new Block(i*115+54,476);
+        blocks[i*11+5] = new Block(i*115+78,476);
+        blocks[i*11+6] = new Block(i*115+30,500);
+        blocks[i*11+7] = new Block(i*115+54,500);
+        blocks[i*11+8] = new Block(i*115+78,500);
+        blocks[i*11+9] = new Block(i*115+30,524);
+        blocks[i*11+10] = new Block(i*115+78,524);
+    };
+
+    for (var i=0; i<5; i++) {
+        block2s[i*11+0] = new Block2(i*115+30,452);
+        block2s[i*11+1] = new Block2(i*115+54,452);
+        block2s[i*11+2] = new Block2(i*115+78,452);
+        block2s[i*11+3] = new Block2(i*115+30,476);
+        block2s[i*11+4] = new Block2(i*115+54,476);
+        block2s[i*11+5] = new Block2(i*115+78,476);
+        block2s[i*11+6] = new Block2(i*115+30,500);
+        block2s[i*11+7] = new Block2(i*115+54,500);
+        block2s[i*11+8] = new Block2(i*115+78,500);
+        block2s[i*11+9] = new Block2(i*115+30,524);
+        block2s[i*11+10] = new Block2(i*115+78,524);
+    };
+
+     //draw wall
+     for (var i=0; i<blocks.length; i++) {
+        walls.push(new Wall());
+     }
+
+     for (var i=0; i<block2s.length; i++) {
+        wall2s.push(new Wall2());
+     }
+
+     var i=0;
+     walls.forEach(function(w) {
+        w.x = blocks[i].x;
+        w.y = blocks[i].y;
+        i++;
+    });
+
+    var i=0;
+     wall2s.forEach(function(w) {
+        w.x = block2s[i].x;
+        w.y = block2s[i].y;
+        i++;
+    });
+
+        // キーイベントハンドラーの初期化
+        window.addEventListener('keydown', function (e) {
+        switch (e.keyCode) {
+            case 37: ship.keyL = true; break;
+            case 39: ship.keyR = true; break;
+            case 32: ship.keyH = true; break;
+        }
+    });
+    window.addEventListener('keyup', function (e) {
+        switch (e.keyCode) {
+            case 37: ship.keyL = false; break;
+            case 39: ship.keyR = false; break;
+            case 32: ship.keyH = false; break;
+        }
+    });
+}
+
+// Game start 
+function start() {
+    startFlag = true;
+    ship = new Ship();
+    ufo = new Ufo();
+
+    clock = 0;
+    Alien.interval = 1000 - stage * 50;
+
+    for (var i = 0 ; i < 4 ; i++) {
+        var offset = (i < 2) ? 96 : 144;
+        for (var j = 0 ; j < 10 ; j++) {
+            aliens.push(new Alien(100 + j*50, i*50 + 50*stage, (4 - i) * 10, offset));
+        }
+        bombs.push(new Bomb());
+    }
+
+    walls.forEach(function(w) {
+        w.exist = true;
+    });
+
+    wall2s.forEach(function(w) {
+        w.exist = true;
+    });
+
+     if (isNaN(alienT)) {
+         alienT = setTimeout(alienLoop, Alien.interval);
+     }
+     if (isNaN(mainT)) {
+         mainT = setInterval(mainLoop, 50);
+     }
+
+     playSound("ufo_s");
+}
+
+function keyDown(evt) {
+    if (ship.keyL) ship.moveL = true;
+    if (ship.keyR) ship.moveR = true;
+};
+
+function keyUp(evt) {
+    if (evt.keyCode == 37) ship.moveL = false;
+    if (evt.keyCode == 39) ship.moveR = false;
+};
+
+ function alienLoop() {
+    var minX = Infinity, maxX = 0, maxY = 0;
+
+    Alien.isEven = !Alien.isEven;
+
+    // update aliens' position
+    aliens.forEach(function (e) {
+        e.x += Alien.isDown ? 0 : (Alien.isLeft ? -10 : 10);
+        e.y += Alien.isDown ? 20 : 0;
+    });
+
+    aliens.forEach(function (e) {
+        minX = Math.min(minX, e.x);
+        maxX = Math.max(maxX, e.x);
+        maxY = Math.max(maxY, e.y);
+    });
+
+    if (Alien.isDown) {
+        Alien.isDown = false;
+    } else if (minX < 20) {
+        Alien.isDown = true;
+        Alien.isLeft = false;
+    } else if (maxX > 560) {
+        Alien.isDown = true;
+        Alien.isLeft = true;
+    }
+
+    if (maxY > 550) {
+        gameOver();
+    } else {
+        Alien.interval = Math.max(50, Alien.interval - 5);
+        setTimeout(alienLoop, Alien.interval);
+    }
+ }
+
+function gameOver() {
+    clearInterval(mainT); mainT = NaN;
+    clearTimeout(alienT); alienT = NaN;
+    draw();
+}
+
+function mainLoop() {
+    playSound("bgm_s");
+    clock++;
+    
+    if (aliens.length == 0) {
+        if (clock > 100) {
+            stage++;
+            start();
+        }
+        return;
+    }
+    bombs.forEach(function (b) {
+        if (b.time < clock) {
+            var a = aliens[rand(aliens.length)];
+            b.x = a.x, b.y = a.y + 30;
+            b.time += rand(200) + 50;
+        }
+        else if (b.y < 600) {
+            b.y += 10;
+        }
+
+        b.even = !b.even;
+        if (b.x - 15 < ship.x && ship.x < b.x + 15 && 530 < b.y && b.y < 550) {
+            gameOver();
+        }
+
+        walls.forEach(function (w) {
+            if (w.x - 15 < b.x && b.x < w.x + 15 &&
+                w.y - 10 < b.y && b.y < w.y + 20 &&
+                w.exist ) {
+                w.exist = false; b.y= 600;
+                return;
+            }
+        })
+
+        wall2s.forEach(function (w) {
+            if (w.x - 15 < b.x && b.x < w.x + 15 &&
+                w.y - 10 < b.y && b.y < w.y + 20 &&
+                w.exist ) {
+                w.exist = false; b.y= 600;
+                return;
+            }
+        })
+    });
+
+    // UFO Exist & Move
+    if (ufo.x < 600) {
+        if (ufo.x <= 0 ) {
+            ufo.x = 600;
+        }
+        else {
+            ufo.x -= 5;
+            playSound("ufo_s");
+        }
+    }
+    else if (rand(50) == 0 ) {
+        ufo.x = 590;
+    }
+
+    // move the ship
+    if (ship.keyR) { ship.x = Math.min(ship.x + 5,  570); }
+    if (ship.keyL) { ship.x = Math.max(ship.x - 5, 0); }
+    
+    shotInterval--;
+
+     //弾丸の位置を更新
+     var fire = false, hit = -1, hitUfo = -1;
+        shots.forEach(function(shot) {
+            if (shot.count < shot.maxCount) {
+                shot.count++;
+                shot.y -= 20;
+                //衝突検出
+                var r=NaN;
+                aliens.forEach(function (e, i) {
+                if (e.x - 15 < shot.x && shot.x < e.x + 15 &&
+                    e.y - 10 < shot.y && shot.y < e.y + 20) {
+                    shot.offset = 312;
+                    shot.draw(ctx);
+                    //audioElement.currentTime = 0;
+                    explode.currentTime = 0;
+                    playSound('explode');
+                    hit = i; shot.y = -100; score += e.point;
+                    return;
+                    }
+                })
+                walls.forEach(function (w) {
+                if (w.x - 15 < shot.x && shot.x < w.x + 15 &&
+                    w.y - 10 < shot.y && shot.y < w.y + 20 &&
+                    w.exist ) {
+                    w.exist = false; shot.y= -100;
+                    return;
+                    }
+                })
+                wall2s.forEach(function (w) {
+                if (w.x - 15 < shot.x && shot.x < w.x + 15 &&
+                    w.y - 10 < shot.y && shot.y < w.y + 20 &&
+                    w.exist ) {
+                    w.exist = false; shot.y= -100;
+                    return;
+                    }
+                })
+                if (ufo.x - 15 < shot.x && shot.x < ufo.x + 15 &&
+                    ufo.y - 10 < shot.y && shot.y < ufo.y + 20) {
+                    hitUfo = 1; shot.y = -100; score += ufo.point;
+                    ufo.x = 600;
+                    return;
+                    }
+            }
+            else if (!fire && ship.keyH && shotInterval <= 0 )  {
+                shot   .count = 0;
+                shot.x = ship.x;
+                shot.y = ship.y;
+                shotInterval = 5;
+                fire = true;
+                shot_s.currentTime = 0;
+                playSound('shot_s');
+            }
+        });
+
+          if (hit >= 0) {
+        aliens.splice(hit, 1);
+
+       // stage clear
+       if (aliens.length == 0) {
+             clock = 0;
+            draw();
+            return;
+        }
+    }
+    draw();
+}
+
+function draw() {
+    // fill background
+    ctx.fillStyle = 'rgb(0,0,0)';
+    ctx.fillRect(0, 0, 600, 600);
+
+    // draw aliens
+    aliens.forEach(function (a) { a.draw(ctx); });
+
+    // draw ship
+    ship.draw(ctx);
+
+    // draw shots
+    shots.forEach(function (shot) {
+        if (shot.count < shot.maxCount) {
+            shot.offset = 216;
+            shot.draw(ctx);
+        }
+    });
+
+    // draw bombs
+    bombs.forEach(function (b) { b.draw(ctx); });
+
+    // draw ufo
+    ufo.draw(ctx);
+
+    walls.forEach(function(w) {
+        if (w.exist) {
+            w.draw(ctx);
+        };
+    });
+
+    wall2s.forEach(function(w) {
+        if (w.exist) {
+            w.draw(ctx);
+        };
+    });
+
+    // draw score
+    ctx.fillStyle = 'rgb(0,255,0)';
+    ctx.fillText(('0000000' + score).slice(-7), 470, 30);
+
+    if (aliens.length == 0) {
+        ctx.fillText('STAGE CLEAR', 200, 150);
+    }
+
+    if (isNaN(mainT)) {
+        ctx.fillText('GAME OVER', 220, 150);
+    }
+}
+
+    </script>
+</head>
+
+<h1 class="main_title">Please click here</h1>
+
+<body onload="init();">
+    <canvas id="canvas" width="600" height="600" />
+    <img id="strip" src="strip.png" style="display:none;" />
+    <audio id="shot_s" src="Shofixti-Shot.wav"></audio>
+    <audio id="explode" src="GUN_SHOT.wav"></audio>
+    <audio id="ufo_s" src="UFO_flay.wav"></audio>
+    <audio id="bgm_s" src="BGM.mp3"></audio>
+</body>
+</html>

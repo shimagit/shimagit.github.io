@@ -1,0 +1,48 @@
+.main_title {
+  width: 400px;
+  height: 60px;
+  color : blue;
+  background-color: skyblue;
+  font-size: 40px;
+  font-weight: bold;
+  font-family: "Lucida Grande";
+  border: solid 5px red;
+  margin: 10px;
+  background-image:
+  "C:\Users\t-shi\OneDrive\画像\100NECDT\NEC_0008.JPG";
+}
+
+p{
+  color: red;
+  font-size: 28px;
+  font-weight: normal;
+  font-family: serif;
+}
+a:hover {
+  color: red;
+}
+
+header {
+  background-color: #26d0c9;
+  height: 90px;
+  display: flex;
+}
+
+.header-list ul{
+  display: flex;
+  list-style: none;
+}
+
+.header-list li{
+  padding: 33px 20px;
+}
+
+.header-logo {
+  font-size: 36px;
+  padding: 20px 40px;
+}
+
+header a {
+  text-decoration: none;
+  color: #ffffff;
+}
