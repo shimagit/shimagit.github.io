@@ -1,16 +1,24 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="stylesheet.css">
+    <style>
+        button {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+        }
+    </style>
     <script type="text/javascript">
     "use strict";
-var ctx, ship, ufo, shots = [], aliens = [], bombs = [],
+    var ctx, ship, ufo, shots = [], aliens = [], bombs = [],
     block, blocks=[], walls=[], 
     block2, block2s=[], wall2s=[],
     score = 0, stage = 1, clock = 0, mainT = NaN, alienT = NaN,
     shotInterval = 0, startFlag = false,
-    diffX, diffY, shipMouse = false;
+    diffX, diffY, shipMouse = false,
+    buttons, keyCode2 = 0;
 
 // Start Waiting
 const WaitForClick = () => new Promise(resolve => document.addEventListener("click", resolve));
@@ -25,6 +33,8 @@ async function WaitSample() {
 }
 
 WaitSample();
+
+function gobj(id) {return document.getElementById(id)}
 
 // Function's
 function Shot() {
@@ -123,9 +133,15 @@ function playSound(soundName) {
     document.getElementById(soundName).play();
 }
 
+function drawCircle(x, y, r, color){
+    ctx.fillStyle = color;
+    ctx.arc(x, y, r, 0, Math.PI*2);
+    ctx.fill();
+}
+
 // Game initialize
 function init() {
-      ctx = document.getElementById('canvas').getContext('2d');
+    ctx = document.getElementById('canvas').getContext('2d');
     ctx.font = "20pt Arial";
     score = 0, stage = 1;
 
@@ -216,8 +232,8 @@ function init() {
         }
     );
     window.addEventListener("mousemove" , function (e) {
-        console.log("aaa");
-        console.log(e.pageX);
+        //console.log("aaa");
+        //console.log(e.pageX);
         ship.x = e.pageX;
         if (ship.x > 570){ship.x = 570};
         if (ship.x < 0){ship.x = 0}; 
@@ -246,10 +262,41 @@ function init() {
 //   };
     
     // スマホ操作
-    window.addEventListener("touchstart" , this.touchstart.bind(this));
-    window.addEventListener("touchmove"  , this.touchmove.bind(this));
-    window.addEventListener("touchend"   , this.touchend.bind(this));
+    //window.addEventListener("touchstart" , this.touchstart.bind(this));
+    //window.addEventListener("touchmove"  , this.touchmove.bind(this));
+    //window.addEventListener("touchend"   , this.touchend.bind(this));
+    buttons = document.querySelectorAll("button")
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = function(e) {
+            var index = e.target.id.charAt(1);
+            blink(index);
+        }
+    }
+}
+    // buttons = document.querySelectorAll("button")
+    //         for (var i = 0 ; i < buttons.length ; i++) {
+    //             buttons[i].onclick = function (e) {
+    //                 if (qTimer) { return; }
+    //                 var index = e.target.id.charAt(1);
+    //                 blink(index);
+    //                 answer(index);
+    //             }
+    //             sounds[i] = new Audio("sound" + (i + 1) + ".mp3");
+    //             sounds[i].preload = "auto";
+    //             sounds[i].load();
+    //         }
 
+function blink(index) {
+    var fgcolor = ["#FC0","#FF0","#0F0","#00F"];
+    var bgcolor = ["#600","#660","#060","#006"];
+
+    gobj("b"+index).style.backgroundColor= fgcolors[index];
+    
+    setTimeout(function(){
+        for (var i=0; i<4; i++) {
+            gobj("b"+i).style.backgroundColor = bgcolors[i];
+        }
+    },400)
 }
 
 // Game start 
@@ -518,9 +565,20 @@ function draw() {
     if (isNaN(mainT)) {
         ctx.fillText('GAME OVER', 220, 150);
     }
+
+    //コントローラ描画
+    ctx.drawImage(arrows, 670, 70, 200, 200);
+    var ax = -100, ay = -100;
+    switch (keyCode2) {
+        case 39: ax = 830; ay = 170; break;
+        case 40: ax = 770; ay = 230; break;
+        case 37: ax = 710; ay = 170; break;
+        case 38: ax = 770; ay = 120; break;
+    }
+    drawCircle(ax, ay, 30,"yellow");
 }
 
-    </script>
+    </script>A
 </head>
 
 <h1 class="main_title">Please click here</h1>
@@ -532,5 +590,7 @@ function draw() {
     <audio id="explode" src="GUN_SHOT.wav"></audio>
     <audio id="ufo_s" src="UFO_flay.wav"></audio>
     <audio id="bgm_s" src="BGM.mp3"></audio>
+
+    <img id="arrows" src="p_ufo.png" style="display:none" />
 </body>
 </html>

@@ -1,0 +1,53 @@
+html,body{
+  width:100%;
+  height:100%;
+  padding:0;
+  margin:0;
+  outline:0;
+  border:0;
+  overflow:hidden;
+}
+h1{
+  text-align:center;
+  width:90%;
+  margin:10px auto;
+  background-color:#eee;
+  padding:5px;
+  font-weight:bold;
+  font-size:24px;
+}
+
+:root{
+  --color-draw:black;
+}
+
+#tennis{
+  width:90%;
+  height:calc(90% - 50px);
+  border-style:solid;
+  border-color:var(--color-draw);
+  border-width:5px 5px 0 5px;
+  position:relative;
+  margin-left:50%;
+  transform:translate(-50%,0);
+  background-color:#eee;
+}
+
+#racket{
+  width:50px;
+  height:5px;
+  background-color:var(--color-draw);
+  position:absolute;
+  bottom:20px;
+  left:100px;
+}
+
+#ball{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background-color:var(--color-draw);
+  position:absolute;
+  top:50%;
+  left:50%;
+}
