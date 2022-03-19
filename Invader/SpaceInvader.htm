@@ -135,6 +135,7 @@ function playSound(soundName) {
 
 function drawCircle(x, y, r, color){
     ctx.fillStyle = color;
+    ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI*2);
     ctx.fill();
 }
@@ -202,7 +203,24 @@ function init() {
     });
 
         // キーイベントハンドラーの初期化
+    // window.addEventListener('keydown', function (e) {
+    //     switch (e.keyCode) {
+    //         case 37: ship.keyL = true; break;
+    //         case 39: ship.keyR = true; break;
+    //         case 32: ship.keyH = true; break;
+    //     }
+    // });
+    // window.addEventListener('keyup', function (e) {
+    //     switch (e.keyCode) {
+    //         case 37: ship.keyL = false; break;
+    //         case 39: ship.keyR = false; break;
+    //         case 32: ship.keyH = false; break;
+    //     }
+    // });
+
+    // キーイベントハンドラーの初期化
     window.addEventListener('keydown', function (e) {
+        keyCode2 = e.keyCode;
         switch (e.keyCode) {
             case 37: ship.keyL = true; break;
             case 39: ship.keyR = true; break;
@@ -210,6 +228,7 @@ function init() {
         }
     });
     window.addEventListener('keyup', function (e) {
+        keyCode2 = 0;
         switch (e.keyCode) {
             case 37: ship.keyL = false; break;
             case 39: ship.keyR = false; break;
@@ -217,32 +236,28 @@ function init() {
         }
     });
 
+
     // キーボード操作
     //window.addEventListener("keydown" , this.keydown.bind(this));
     //window.addEventListener("keyup"   , this.keyup.bind(this));
 
-    // マウス操作
-    //window.addEventListener("mousemove" , this.mousemove.bind(this));
-    window.addEventListener("mousedown" , function (e) {
-        ship.keyH = true;
-        }
-    );
-    window.addEventListener("mouseup" , function (e) {
-        ship.keyH = false;
-        }
-    );
-    window.addEventListener("mousemove" , function (e) {
-        //console.log("aaa");
-        //console.log(e.pageX);
-        ship.x = e.pageX;
-        if (ship.x > 570){ship.x = 570};
-        if (ship.x < 0){ship.x = 0}; 
-    //     if(typeof this.mouse_pos === "undefined"){
-    //     this.mouse_pos = e.pageX;
-    //     colsole.log(this.mouse_pos)
-    //  }
-            }
-    );
+    // 旧マウス操作
+    // window.addEventListener("mousedown" , function (e) {
+    //     ship.keyH = true;
+    //     }
+    // );
+    // window.addEventListener("mouseup" , function (e) {
+    //     ship.keyH = false;
+    //     }
+    // );
+    // window.addEventListener("mousemove" , function (e) {
+    //     ship.x = e.pageX;
+    //     if (ship.x > 570){ship.x = 570};
+    //     if (ship.x < 0){ship.x = 0}; 
+    //     }
+    // );
+
+
 //     MAIN.prototype.mousemove = function(e){
 //     if('ontouchstart' in window === true){return;}
 
@@ -301,6 +316,21 @@ function blink(index) {
 
 // Game start 
 function start() {
+    // window.onkeydown = mykeydown;
+    // window.onkeyup = mykeyup;
+
+    var maze = document.getElementById("canvas");
+    maze.onmousedown = mymousedown;
+    maze.onmouseup = mykeyup;
+    // maze.oncontextmenu = function (e) { e.preventDefault(); };
+    // maze.addEventListener('touchstart', mymousedown);
+    // maze.addEventListener('touchend', mykeyup);
+
+            //timer = setInterval(tick, 45);
+            //document.getElementById("START").style.display = "none";
+            //document.getElementById("bgm").play();
+
+
     startFlag = true;
     ship = new Ship();
     ufo = new Ufo();
@@ -333,13 +363,49 @@ function start() {
 
      playSound("ufo_s");
 }
+ 
+function mykeydown(e){
+    keyCodeX = e.keyCode;
+    console.log(keyCodeX);
+}
 
-function keyDown(evt) {
+function mykeyup(e){
+    // keyCodeX = 0;
+    keyCode2 = 0;
+    ship.keyL = false;
+    ship.keyR = false;
+    ship.keyH = false;
+}
+
+function mymousedown(e) {
+    var mouseX = !isNaN(e.offsetX) ? e. offsetX : e.touches[0].clineX;
+    var mouseY = !isNaN(e.offsetY) ? e. offsetY : e.touches[0].clineY;
+    if (200 < mouseX && mouseX < 400 && 600 < mouseY && mouseY < 800) {
+        mouseX -= 300;
+        mouseY -= 700;
+        if (Math.abs(mouseX) > Math.abs(mouseY)) {
+            keyCode2 = mouseX < 0 ? 37 : 39;
+        } else {
+            keyCode2 = mouseY < 0 ? 38 : 40;
+        }
+        switch (keyCode2) { 
+            case 37: ship.keyL = true; break;
+            case 39: ship.keyR = true; break;
+            case 32: ship.keyH = true; break;
+        }
+    }
+    if (50 < mouseX && mouseX < 150 && 650 < mouseY && mouseY < 750) {
+        keyCode2 = 32; ship.keyH = true;
+    }
+    console.log(mouseX, mouseY);
+}
+
+function zkeyDown(evt) {
     if (ship.keyL) ship.moveL = true;
     if (ship.keyR) ship.moveR = true;
 };
 
-function keyUp(evt) {
+function zkeyUp(evt) {
     if (evt.keyCode == 37) ship.moveL = false;
     if (evt.keyCode == 39) ship.moveR = false;
 };
@@ -521,6 +587,8 @@ function draw() {
     // fill background
     ctx.fillStyle = 'rgb(0,0,0)';
     ctx.fillRect(0, 0, 600, 600);
+    ctx.drawImage(arrows, 200, 600, 200, 200);
+    ctx.drawImage(arrows, 50, 650, 100, 100);
 
     // draw aliens
     aliens.forEach(function (a) { a.draw(ctx); });
@@ -567,30 +635,32 @@ function draw() {
     }
 
     //コントローラ描画
-    ctx.drawImage(arrows, 670, 70, 200, 200);
+    //ctx.drawImage(arrows, 670, 970, 200, 200);
     var ax = -100, ay = -100;
     switch (keyCode2) {
-        case 39: ax = 830; ay = 170; break;
-        case 40: ax = 770; ay = 230; break;
-        case 37: ax = 710; ay = 170; break;
-        case 38: ax = 770; ay = 120; break;
+        case 39: ax = 360; ay = 700; break;
+        case 40: ax = 300; ay = 760; break;
+        case 37: ax = 245; ay = 700; break;
+        case 38: ax = 300; ay = 650; break;
+        case 32: ax = 100; ay = 700; break;
     }
     drawCircle(ax, ay, 30,"yellow");
+    console.log(keyCode2);
 }
 
-    </script>A
+    </script>
 </head>
 
 <h1 class="main_title">Please click here</h1>
 
 <body onload="init();">
-    <canvas id="canvas" width="600" height="600" />
+    <canvas id="canvas" width="600" height="1000"></canvas>
+    <!-- <canvas id="maze" width="900" height="600"></canvas> -->
+    <img id="arrows" src="arrows.png" style="display:none;" />
     <img id="strip" src="strip.png" style="display:none;" />
     <audio id="shot_s" src="Shofixti-Shot.wav"></audio>
     <audio id="explode" src="GUN_SHOT.wav"></audio>
     <audio id="ufo_s" src="UFO_flay.wav"></audio>
     <audio id="bgm_s" src="BGM.mp3"></audio>
-
-    <img id="arrows" src="p_ufo.png" style="display:none" />
 </body>
 </html>
