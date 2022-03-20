@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="stylesheet.css">
     <style>
+        body {
+            user-select: none;
+        }
+
         button {
             width: 150px;
             height: 150px;
@@ -20,6 +24,10 @@
     diffX, diffY, shipMouse = false,
     buttons, keyCode2 = 0;
 
+    document.oncontextmenu = () => {
+      return false;
+    }
+    
 // Start Waiting
 const WaitForClick = () => new Promise(resolve => document.addEventListener("click", resolve));
 
