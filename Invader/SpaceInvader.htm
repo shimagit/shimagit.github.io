@@ -13,6 +13,13 @@
             height: 150px;
             border-radius: 10px;
         }
+
+    #START {
+      position: absolute;
+      left: 200px;
+      top: 200px;
+    }
+
     </style>
     <script type="text/javascript">
     "use strict";
@@ -23,24 +30,23 @@
     shotInterval = 0, startFlag = false,
     diffX, diffY, shipMouse = false,
     buttons, keyCode2 = 0;
-
     document.oncontextmenu = () => {
       return false;
     }
-    
+
 // Start Waiting
-const WaitForClick = () => new Promise(resolve => document.addEventListener("click", resolve));
+// const WaitForClick = () => new Promise(resolve => document.addEventListener("click", resolve));
 
-async function WaitSample() {
-  console.log("クリック待ち開始。");
-  await WaitForClick();
-  console.log("この行は、クリックされた後に実行されます。");
-    if (startFlag==false) {
-        start();
-    }
-}
+// async function WaitSample() {
+//   console.log("クリック待ち開始。");
+//   await WaitForClick();
+//   console.log("この行は、クリックされた後に実行されます。");
+//     if (startFlag==false) {
+//         start();
+//     }
+// }
 
-WaitSample();
+// WaitSample();
 
 function gobj(id) {return document.getElementById(id)}
 
@@ -210,22 +216,6 @@ function init() {
         i++;
     });
 
-        // キーイベントハンドラーの初期化
-    // window.addEventListener('keydown', function (e) {
-    //     switch (e.keyCode) {
-    //         case 37: ship.keyL = true; break;
-    //         case 39: ship.keyR = true; break;
-    //         case 32: ship.keyH = true; break;
-    //     }
-    // });
-    // window.addEventListener('keyup', function (e) {
-    //     switch (e.keyCode) {
-    //         case 37: ship.keyL = false; break;
-    //         case 39: ship.keyR = false; break;
-    //         case 32: ship.keyH = false; break;
-    //     }
-    // });
-
     // キーイベントハンドラーの初期化
     window.addEventListener('keydown', function (e) {
         keyCode2 = e.keyCode;
@@ -243,100 +233,17 @@ function init() {
             case 32: ship.keyH = false; break;
         }
     });
-
-
-    // キーボード操作
-    //window.addEventListener("keydown" , this.keydown.bind(this));
-    //window.addEventListener("keyup"   , this.keyup.bind(this));
-
-    // 旧マウス操作
-    // window.addEventListener("mousedown" , function (e) {
-    //     ship.keyH = true;
-    //     }
-    // );
-    // window.addEventListener("mouseup" , function (e) {
-    //     ship.keyH = false;
-    //     }
-    // );
-    // window.addEventListener("mousemove" , function (e) {
-    //     ship.x = e.pageX;
-    //     if (ship.x > 570){ship.x = 570};
-    //     if (ship.x < 0){ship.x = 0}; 
-    //     }
-    // );
-
-
-//     MAIN.prototype.mousemove = function(e){
-//     if('ontouchstart' in window === true){return;}
-
-//     if(typeof this.mouse_pos === "undefined"){
-//       this.mouse_pos = e.pageX;
-//     }
-//     let base_offset = -this.space.left;
-//     this.racket_mouse_move(e.pageX + base_offset);
-//   };
-//   MAIN.prototype.racket_mouse_move = function(x){
-//     let min = 0;
-//     let max = this.space.width - this.racket.offsetWidth;
-//     if(x < min){x = 0;}
-//     else if(x > max){x = max;}
-//     this.racket.style.setProperty("left" , x +"px" , "");
-//     this.mouse_pos = x;
-//   };
-    
-    // スマホ操作
-    //window.addEventListener("touchstart" , this.touchstart.bind(this));
-    //window.addEventListener("touchmove"  , this.touchmove.bind(this));
-    //window.addEventListener("touchend"   , this.touchend.bind(this));
-    buttons = document.querySelectorAll("button")
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].onclick = function(e) {
-            var index = e.target.id.charAt(1);
-            blink(index);
-        }
-    }
-}
-    // buttons = document.querySelectorAll("button")
-    //         for (var i = 0 ; i < buttons.length ; i++) {
-    //             buttons[i].onclick = function (e) {
-    //                 if (qTimer) { return; }
-    //                 var index = e.target.id.charAt(1);
-    //                 blink(index);
-    //                 answer(index);
-    //             }
-    //             sounds[i] = new Audio("sound" + (i + 1) + ".mp3");
-    //             sounds[i].preload = "auto";
-    //             sounds[i].load();
-    //         }
-
-function blink(index) {
-    var fgcolor = ["#FC0","#FF0","#0F0","#00F"];
-    var bgcolor = ["#600","#660","#060","#006"];
-
-    gobj("b"+index).style.backgroundColor= fgcolors[index];
-    
-    setTimeout(function(){
-        for (var i=0; i<4; i++) {
-            gobj("b"+i).style.backgroundColor = bgcolors[i];
-        }
-    },400)
 }
 
 // Game start 
 function start() {
-    // window.onkeydown = mykeydown;
-    // window.onkeyup = mykeyup;
-
     var maze = document.getElementById("canvas");
     maze.onmousedown = mymousedown;
-    maze.onmouseup = mykeyup;
-    // maze.oncontextmenu = function (e) { e.preventDefault(); };
-    // maze.addEventListener('touchstart', mymousedown);
-    // maze.addEventListener('touchend', mykeyup);
-
-            //timer = setInterval(tick, 45);
-            //document.getElementById("START").style.display = "none";
-            //document.getElementById("bgm").play();
+    maze.onmouseup = mymouseup;
+    maze.oncontextmenu = function (e) { e.preventDefault(); };
+    maze.addEventListener('touchstart', mymousedown);
+    maze.addEventListener('touchend', mymouseup);
+    document.getElementById("START").style.display = "none";
 
 
     startFlag = true;
@@ -372,13 +279,7 @@ function start() {
      playSound("ufo_s");
 }
  
-function mykeydown(e){
-    keyCodeX = e.keyCode;
-    console.log(keyCodeX);
-}
-
-function mykeyup(e){
-    // keyCodeX = 0;
+function mymouseup(e){
     keyCode2 = 0;
     ship.keyL = false;
     ship.keyR = false;
@@ -386,8 +287,9 @@ function mykeyup(e){
 }
 
 function mymousedown(e) {
-    var mouseX = !isNaN(e.offsetX) ? e. offsetX : e.touches[0].clineX;
-    var mouseY = !isNaN(e.offsetY) ? e. offsetY : e.touches[0].clineY;
+    e.preventDefault() ;
+    var mouseX = !isNaN(e.offsetX) ? e.offsetX : e.touches[0].clientX;
+    var mouseY = !isNaN(e.offsetY) ? e.offsetY : e.touches[0].clientY;
     if (200 < mouseX && mouseX < 400 && 600 < mouseY && mouseY < 800) {
         mouseX -= 300;
         mouseY -= 700;
@@ -401,22 +303,13 @@ function mymousedown(e) {
             case 39: ship.keyR = true; break;
             case 32: ship.keyH = true; break;
         }
+        drawCircle(mouseX + 300, mouseY + 700, 30,"red");
     }
     if (50 < mouseX && mouseX < 150 && 650 < mouseY && mouseY < 750) {
         keyCode2 = 32; ship.keyH = true;
     }
-    console.log(mouseX, mouseY);
+    drawCircle(mouseX, mouseY, 35,"red");
 }
-
-function zkeyDown(evt) {
-    if (ship.keyL) ship.moveL = true;
-    if (ship.keyR) ship.moveR = true;
-};
-
-function zkeyUp(evt) {
-    if (evt.keyCode == 37) ship.moveL = false;
-    if (evt.keyCode == 39) ship.moveR = false;
-};
 
  function alienLoop() {
     var minX = Infinity, maxX = 0, maxY = 0;
@@ -514,7 +407,7 @@ function mainLoop() {
             playSound("ufo_s");
         }
     }
-    else if (rand(50) == 0 ) {
+    else if (rand(500) == 0 ) {
         ufo.x = 590;
     }
 
@@ -643,7 +536,6 @@ function draw() {
     }
 
     //コントローラ描画
-    //ctx.drawImage(arrows, 670, 970, 200, 200);
     var ax = -100, ay = -100;
     switch (keyCode2) {
         case 39: ax = 360; ay = 700; break;
@@ -659,13 +551,13 @@ function draw() {
     </script>
 </head>
 
-<h1 class="main_title">Please click here</h1>
+<!-- <h1 class="main_title">Please click here</h1> -->
 
 <body onload="init();">
     <canvas id="canvas" width="600" height="1000"></canvas>
-    <!-- <canvas id="maze" width="900" height="600"></canvas> -->
     <img id="arrows" src="arrows.png" style="display:none;" />
     <img id="strip" src="strip.png" style="display:none;" />
+    <img id="START" src="start.png" onclick="start()"><br/>
     <audio id="shot_s" src="Shofixti-Shot.wav"></audio>
     <audio id="explode" src="GUN_SHOT.wav"></audio>
     <audio id="ufo_s" src="UFO_flay.wav"></audio>
