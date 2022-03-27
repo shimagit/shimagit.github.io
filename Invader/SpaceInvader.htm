@@ -16,8 +16,8 @@
 
     #START {
       position: absolute;
-      left: 200px;
-      top: 200px;
+      left: 50px;
+      top: 100px;
     }
 
     </style>
@@ -290,9 +290,9 @@ function mymousedown(e) {
     e.preventDefault() ;
     var mouseX = !isNaN(e.offsetX) ? e.offsetX : e.touches[0].clientX;
     var mouseY = !isNaN(e.offsetY) ? e.offsetY : e.touches[0].clientY;
-    if (200 < mouseX && mouseX < 400 && 600 < mouseY && mouseY < 800) {
-        mouseX -= 300;
-        mouseY -= 700;
+    if (200 < mouseX && mouseX < 900 && 900 < mouseY && mouseY < 1500) {
+        mouseX -= 600;
+        mouseY -= 1200;
         if (Math.abs(mouseX) > Math.abs(mouseY)) {
             keyCode2 = mouseX < 0 ? 37 : 39;
         } else {
@@ -305,7 +305,7 @@ function mymousedown(e) {
         }
         drawCircle(mouseX + 300, mouseY + 700, 30,"red");
     }
-    if (50 < mouseX && mouseX < 150 && 650 < mouseY && mouseY < 750) {
+    if (0 < mouseX && mouseX < 300 && 1050 < mouseY && mouseY < 1450) {
         keyCode2 = 32; ship.keyH = true;
     }
     drawCircle(mouseX, mouseY, 35,"red");
@@ -487,9 +487,9 @@ function mainLoop() {
 function draw() {
     // fill background
     ctx.fillStyle = 'rgb(0,0,0)';
-    ctx.fillRect(0, 0, 600, 600);
-    ctx.drawImage(arrows, 200, 600, 200, 200);
-    ctx.drawImage(arrows, 50, 650, 100, 100);
+    ctx.fillRect(0, 0, 900, 900);
+    ctx.drawImage(arrows, 300, 900, 600, 600);
+    ctx.drawImage(cnt_button, 0, 1050, 300, 300);
 
     // draw aliens
     aliens.forEach(function (a) { a.draw(ctx); });
@@ -538,11 +538,11 @@ function draw() {
     //コントローラ描画
     var ax = -100, ay = -100;
     switch (keyCode2) {
-        case 39: ax = 360; ay = 700; break;
-        case 40: ax = 300; ay = 760; break;
-        case 37: ax = 245; ay = 700; break;
-        case 38: ax = 300; ay = 650; break;
-        case 32: ax = 100; ay = 700; break;
+        case 39: ax = 750; ay = 1200; break;
+        case 40: ax = 600; ay = 1350; break;
+        case 37: ax = 450; ay = 1200; break;
+        case 38: ax = 600; ay = 1050; break;
+        case 32: ax = 150; ay = 1200; break;
     }
     drawCircle(ax, ay, 30,"yellow");
     console.log(keyCode2);
@@ -554,8 +554,9 @@ function draw() {
 <!-- <h1 class="main_title">Please click here</h1> -->
 
 <body onload="init();">
-    <canvas id="canvas" width="600" height="1000"></canvas>
+    <canvas id="canvas" width="900" height="1500"></canvas>
     <img id="arrows" src="arrows.png" style="display:none;" />
+    <img id="cnt_button" src="cnt_button.png" style="display:none;" />
     <img id="strip" src="strip.png" style="display:none;" />
     <img id="START" src="start.png" onclick="start()"><br/>
     <audio id="shot_s" src="Shofixti-Shot.wav"></audio>
