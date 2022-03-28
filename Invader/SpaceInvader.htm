@@ -34,20 +34,6 @@
       return false;
     }
 
-// Start Waiting
-// const WaitForClick = () => new Promise(resolve => document.addEventListener("click", resolve));
-
-// async function WaitSample() {
-//   console.log("クリック待ち開始。");
-//   await WaitForClick();
-//   console.log("この行は、クリックされた後に実行されます。");
-//     if (startFlag==false) {
-//         start();
-//     }
-// }
-
-// WaitSample();
-
 function gobj(id) {return document.getElementById(id)}
 
 // Function's
@@ -62,7 +48,7 @@ function Shot() {
 }
 function Bomb() {
     this.x = 0;
-    this.y = 600;
+    this.y = 900;
     this.offset = 48;
     this.even = false;
     this.time = rand(200) + 50;
@@ -79,7 +65,7 @@ function Alien(x, y, point, offset) {
 
 function Ship() {
     this.x = 0;
-    this.y = 550;
+    this.y = 850;
     this.offset = 192;
     this.moveL = false;
     this.moveR = false;
@@ -87,7 +73,7 @@ function Ship() {
 }
 
 function Ufo() {
-    this.x = 600;
+    this.x = 900;
     this.y = 30;
     this.offset = 240;
     this.point = 300;
@@ -165,32 +151,33 @@ function init() {
     }
 
     // トーチカ設定
-    for (var i=0; i<5; i++) {
-        blocks[i*11+0] = new Block(i*115+30,452);
-        blocks[i*11+1] = new Block(i*115+54,452);
-        blocks[i*11+2] = new Block(i*115+78,452);
-        blocks[i*11+3] = new Block(i*115+30,476);
-        blocks[i*11+4] = new Block(i*115+54,476);
-        blocks[i*11+5] = new Block(i*115+78,476);
-        blocks[i*11+6] = new Block(i*115+30,500);
-        blocks[i*11+7] = new Block(i*115+54,500);
-        blocks[i*11+8] = new Block(i*115+78,500);
-        blocks[i*11+9] = new Block(i*115+30,524);
-        blocks[i*11+10] = new Block(i*115+78,524);
+    var d = 150;
+    for (var i=0; i<6; i++) {
+        blocks[i*11+0] = new Block(i*d+30,452+300);
+        blocks[i*11+1] = new Block(i*d+54,452+300);
+        blocks[i*11+2] = new Block(i*d+78,452+300);
+        blocks[i*11+3] = new Block(i*d+30,476+300);
+        blocks[i*11+4] = new Block(i*d+54,476+300);
+        blocks[i*11+5] = new Block(i*d+78,476+300);
+        blocks[i*11+6] = new Block(i*d+30,500+300);
+        blocks[i*11+7] = new Block(i*d+54,500+300);
+        blocks[i*11+8] = new Block(i*d+78,500+300);
+        blocks[i*11+9] = new Block(i*d+30,524+300);
+        blocks[i*11+10] = new Block(i*d+78,524+300);
     };
 
-    for (var i=0; i<5; i++) {
-        block2s[i*11+0] = new Block2(i*115+30,452);
-        block2s[i*11+1] = new Block2(i*115+54,452);
-        block2s[i*11+2] = new Block2(i*115+78,452);
-        block2s[i*11+3] = new Block2(i*115+30,476);
-        block2s[i*11+4] = new Block2(i*115+54,476);
-        block2s[i*11+5] = new Block2(i*115+78,476);
-        block2s[i*11+6] = new Block2(i*115+30,500);
-        block2s[i*11+7] = new Block2(i*115+54,500);
-        block2s[i*11+8] = new Block2(i*115+78,500);
-        block2s[i*11+9] = new Block2(i*115+30,524);
-        block2s[i*11+10] = new Block2(i*115+78,524);
+    for (var i=0; i<6; i++) {
+        block2s[i*11+0] = new Block2(i*d+30,452+300);
+        block2s[i*11+1] = new Block2(i*d+54,452+300);
+        block2s[i*11+2] = new Block2(i*d+78,452+300);
+        block2s[i*11+3] = new Block2(i*d+30,476+300);
+        block2s[i*11+4] = new Block2(i*d+54,476+300);
+        block2s[i*11+5] = new Block2(i*d+78,476+300);
+        block2s[i*11+6] = new Block2(i*d+30,500+300);
+        block2s[i*11+7] = new Block2(i*d+54,500+300);
+        block2s[i*11+8] = new Block2(i*d+78,500+300);
+        block2s[i*11+9] = new Block2(i*d+30,524+300);
+        block2s[i*11+10] = new Block2(i*d+78,524+300);
     };
 
      //draw wall
@@ -333,12 +320,12 @@ function mymousedown(e) {
     } else if (minX < 20) {
         Alien.isDown = true;
         Alien.isLeft = false;
-    } else if (maxX > 560) {
+    } else if (maxX > 860) {
         Alien.isDown = true;
         Alien.isLeft = true;
     }
 
-    if (maxY > 550) {
+    if (maxY > 850) {
         gameOver();
     } else {
         Alien.interval = Math.max(50, Alien.interval - 5);
@@ -369,12 +356,12 @@ function mainLoop() {
             b.x = a.x, b.y = a.y + 30;
             b.time += rand(200) + 50;
         }
-        else if (b.y < 600) {
+        else if (b.y < 900) {
             b.y += 10;
         }
 
         b.even = !b.even;
-        if (b.x - 15 < ship.x && ship.x < b.x + 15 && 530 < b.y && b.y < 550) {
+        if (b.x - 15 < ship.x && ship.x < b.x + 15 && 830 < b.y && b.y < 850) {
             gameOver();
         }
 
@@ -382,7 +369,7 @@ function mainLoop() {
             if (w.x - 15 < b.x && b.x < w.x + 15 &&
                 w.y - 10 < b.y && b.y < w.y + 20 &&
                 w.exist ) {
-                w.exist = false; b.y= 600;
+                w.exist = false; b.y= 900;
                 return;
             }
         })
@@ -391,28 +378,28 @@ function mainLoop() {
             if (w.x - 15 < b.x && b.x < w.x + 15 &&
                 w.y - 10 < b.y && b.y < w.y + 20 &&
                 w.exist ) {
-                w.exist = false; b.y= 600;
+                w.exist = false; b.y= 900;
                 return;
             }
         })
     });
 
     // UFO Exist & Move
-    if (ufo.x < 600) {
+    if (ufo.x < 900) {
         if (ufo.x <= 0 ) {
-            ufo.x = 600;
+            ufo.x = 900;
         }
         else {
             ufo.x -= 5;
             playSound("ufo_s");
         }
     }
-    else if (rand(500) == 0 ) {
-        ufo.x = 590;
+    else if (rand(200) == 0 ) {
+        ufo.x = 890;
     }
 
     // move the ship
-    if (ship.keyR) { ship.x = Math.min(ship.x + 5,  570); }
+    if (ship.keyR) { ship.x = Math.min(ship.x + 5,  870); }
     if (ship.keyL) { ship.x = Math.max(ship.x - 5, 0); }
     
     shotInterval--;
@@ -550,8 +537,6 @@ function draw() {
 
     </script>
 </head>
-
-<!-- <h1 class="main_title">Please click here</h1> -->
 
 <body onload="init();">
     <canvas id="canvas" width="900" height="1500"></canvas>
