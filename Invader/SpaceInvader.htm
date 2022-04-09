@@ -443,7 +443,7 @@ function mainLoop() {
                 if (ufo.x - 15 < shot.x && shot.x < ufo.x + 15 &&
                     ufo.y - 10 < shot.y && shot.y < ufo.y + 20) {
                     hitUfo = 1; shot.y = -100; score += ufo.point;
-                    ufo.x = 600;
+                    ufo.x = 900;
                     return;
                     }
             }
@@ -512,14 +512,15 @@ function draw() {
 
     // draw score
     ctx.fillStyle = 'rgb(0,255,0)';
+    ctx.fillText(('SCORE:'), 350, 30);
     ctx.fillText(('0000000' + score).slice(-7), 470, 30);
 
     if (aliens.length == 0) {
-        ctx.fillText('STAGE CLEAR', 200, 150);
+        ctx.fillText('STAGE CLEAR', 350, 250);
     }
 
     if (isNaN(mainT)) {
-        ctx.fillText('GAME OVER', 220, 150);
+        ctx.fillText('GAME OVER', 350, 250);
     }
 
     //コントローラ描画
